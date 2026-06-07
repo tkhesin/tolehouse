@@ -442,7 +442,7 @@
   // ============================================================
   // CONFIGURATION — replace with your deployed Apps Script URL
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-8CuCGNu9HdJT6lscrarA0VbPUBggdW_ep0NynnYUPKB6UWYe1nOy5LvK2282hVdxIQ/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9Xo6UtEaloflXhbZ13OIKr2Il9exb9ZurhJ5ein5k1nSu6imXjeauUjymFJbfpeqp9A/exec';
   // ============================================================
 
   let allSongs = [];       // { artist, title, genres[] }
@@ -560,16 +560,13 @@
     btn.innerHTML = '<span class="loading-spinner"></span>Adding to queue…';
 
     try {
-      const res = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submit',
-          name,
-          artist: selectedSong.artist,
-          title: selectedSong.title
-        })
+      const params = new URLSearchParams({
+        action: 'submit',
+        name,
+        artist: selectedSong.artist,
+        title: selectedSong.title
       });
+      const res = await fetch(SCRIPT_URL + '?' + params.toString());
       const data = await res.json();
 
       if (data.success) {
