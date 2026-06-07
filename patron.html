@@ -442,10 +442,10 @@
   // ============================================================
   // CONFIGURATION — replace with your deployed Apps Script URL
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9Xo6UtEaloflXhbZ13OIKr2Il9exb9ZurhJ5ein5k1nSu6imXjeauUjymFJbfpeqp9A/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVaTtDF4oRAJUQmKJs1mF4zIsctyVdqyzhy_aZwh9rKYctrqHbdflPou79dE_SCVM8Zw/exec';
   // ============================================================
 
-  let allSongs = [];       // { artist, title, genres[] }
+  let allSongs = [];       // { song, genres[] }
   let filtered = [];
   let selectedSong = null;
   let activeGenre = 'all';
@@ -469,8 +469,7 @@
     filtered = allSongs.filter(s => {
       const matchGenre = activeGenre === 'all' || s.genres.includes(activeGenre);
       const matchSearch = !query ||
-        s.title.toLowerCase().includes(query) ||
-        s.artist.toLowerCase().includes(query);
+        s.song.toLowerCase().includes(query);
       return matchGenre && matchSearch;
     });
     renderSongs();
@@ -494,12 +493,11 @@
     }
 
     list.innerHTML = filtered.map((s, i) => {
-      const key = `${s.artist}|||${s.title}`;
+      const key = s.song;
       const isSel = selectedSong && selectedSong.key === key;
       return `<div class="song-item${isSel ? ' selected' : ''}" onclick="selectSong(${i})" data-key="${key}">
         <div class="song-info">
-          <div class="song-title">${escHtml(s.title)}</div>
-          <div class="song-artist">${escHtml(s.artist)}</div>
+          <div class="song-title">${escHtml(s.song)}</div>
         </div>
         <div class="song-check"></div>
       </div>`;
@@ -508,13 +506,13 @@
 
   function selectSong(filteredIdx) {
     const s = filtered[filteredIdx];
-    const key = `${s.artist}|||${s.title}`;
+    const key = s.song;
     if (selectedSong && selectedSong.key === key) {
       clearSelection();
       return;
     }
     selectedSong = { ...s, key };
-    document.getElementById('selected-song-name').textContent = `${s.artist} — ${s.title}`;
+    document.getElementById('selected-song-name').textContent = s.song;
     document.getElementById('selected-banner').classList.add('visible');
     updateSubmitState();
     renderSongs();
@@ -563,14 +561,13 @@
       const params = new URLSearchParams({
         action: 'submit',
         name,
-        artist: selectedSong.artist,
-        title: selectedSong.title
+        song: selectedSong.song
       });
       const res = await fetch(SCRIPT_URL + '?' + params.toString());
       const data = await res.json();
 
       if (data.success) {
-        showToast(`You're in the queue! "${selectedSong.title}" has been added.`, 'success');
+        showToast(`You're in the queue! "${selectedSong.song}" has been added.`, 'success');
         clearSelection();
         document.getElementById('search-input').value = '';
         applyFilters();
