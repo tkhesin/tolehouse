@@ -343,7 +343,7 @@
 
 <script>
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-8CuCGNu9HdJT6lscrarA0VbPUBggdW_ep0NynnYUPKB6UWYe1nOy5LvK2282hVdxIQ/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9Xo6UtEaloflXhbZ13OIKr2Il9exb9ZurhJ5ein5k1nSu6imXjeauUjymFJbfpeqp9A/exec';
   const AUTO_REFRESH_MS = 15000; // auto-refresh every 15s
   // ============================================================
 
@@ -429,11 +429,8 @@
     if (item) item.style.opacity = '0.4';
 
     try {
-      const res = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateStatus', rowIndex, status: newStatus })
-      });
+      const params = new URLSearchParams({ action: 'updateStatus', rowIndex, status: newStatus });
+      const res = await fetch(SCRIPT_URL + '?' + params.toString());
       const data = await res.json();
       if (data.success) {
         // Update local queue state
