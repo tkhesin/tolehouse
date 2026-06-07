@@ -343,7 +343,7 @@
 
 <script>
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9Xo6UtEaloflXhbZ13OIKr2Il9exb9ZurhJ5ein5k1nSu6imXjeauUjymFJbfpeqp9A/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVaTtDF4oRAJUQmKJs1mF4zIsctyVdqyzhy_aZwh9rKYctrqHbdflPou79dE_SCVM8Zw/exec';
   const AUTO_REFRESH_MS = 15000; // auto-refresh every 15s
   // ============================================================
 
@@ -412,7 +412,7 @@
       return `<div class="queue-item ${statusClass}" id="row-${r.rowIndex}">
         <div class="queue-position">${posLabel}</div>
         <div class="queue-info">
-          <div class="queue-song">${escHtml(r.artist)} — ${escHtml(r.title)}</div>
+          <div class="queue-song">${escHtml(r.song)}</div>
           <div class="queue-meta">
             <span class="queue-name">${escHtml(r.name)}</span>
             ${time ? `<span class="queue-dot">·</span><span class="time-label">${time}</span>` : ''}
