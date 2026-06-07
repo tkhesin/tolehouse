@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KJ View — Tolehouse Karaoke</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --deep: #0D0D0D;
+    --surface: #161616;
+    --surface2: #1E1E1E;
+    --surface3: #272727;
+    --text: #F0EAD6;
+    --text-dim: #8A8070;
+    --text-mid: #B8A98A;
+    --pending-bg: rgba(201,168,76,0.07);
+    --pending-border: rgba(201,168,76,0.3);
+    --done-bg: rgba(30,30,30,0.5);
+    --done-border: rgba(255,255,255,0.06);
+    --skipped-bg: rgba(30,30,30,0.3);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    background-image: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .header-icon { font-size: 22px; }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .refresh-btn {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-mid);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+
+  .refresh-btn:hover { background: var(--surface3); color: var(--text); }
+
+  .refresh-icon { display: inline-block; transition: transform 0.5s; }
+  .refresh-icon.spinning { animation: spin 0.6s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .stats-bar::-webkit-scrollbar { display: none; }
+
+  .stat {
+    padding: 14px 24px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    min-width: 100px;
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--gold-light);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* Filter tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 16px 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+
+  .tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .tab.active { background: var(--surface2); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
+
+  /* Queue list */
+  .queue-wrap { padding: 0 24px 80px; }
+
+  .queue-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .queue-empty .big { font-size: 48px; margin-bottom: 16px; }
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+  }
+
+  .queue-item.pending {
+    background: var(--pending-bg);
+    border-color: var(--pending-border);
+  }
+
+  .queue-item.done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+    opacity: 0.55;
+  }
+
+  .queue-item.skipped {
+    background: var(--skipped-bg);
+    border-color: var(--done-border);
+    opacity: 0.45;
+  }
+
+  .queue-position {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text-dim);
+    min-width: 32px;
+    text-align: center;
+  }
+
+  .queue-item.pending .queue-position { color: var(--gold); }
+
+  .queue-info { flex: 1; min-width: 0; }
+
+  .queue-song {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .queue-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .queue-name { color: var(--text-mid); font-weight: 500; }
+  .queue-dot { opacity: 0.4; }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .status-badge.pending { background: rgba(201,168,76,0.15); color: var(--gold-light); }
+  .status-badge.done { background: rgba(58,138,92,0.15); color: #7DD4A8; }
+  .status-badge.skipped { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+
+  /* Action buttons */
+  .actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .action-btn {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .action-btn.done-btn {
+    color: #7DD4A8;
+    border-color: rgba(58,138,92,0.3);
+  }
+  .action-btn.done-btn:hover { background: rgba(58,138,92,0.15); }
+
+  .action-btn.skip-btn {
+    color: var(--text-dim);
+    border-color: rgba(255,255,255,0.08);
+  }
+  .action-btn.skip-btn:hover { background: var(--surface3); color: var(--text); }
+
+  .action-btn.undo-btn {
+    color: var(--gold);
+    border-color: rgba(201,168,76,0.2);
+  }
+  .action-btn.undo-btn:hover { background: rgba(201,168,76,0.08); }
+
+  .time-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    max-width: 320px;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0;
+    z-index: 999;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.success { background: #1A3328; border: 1px solid #3A8A5C; color: #7DD4A8; }
+  .toast.error { background: #2E1A18; border: 1px solid #C44B3A; color: #F08070; }
+
+  .last-updated {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="header-icon">🎤</span>
+    <div>
+      <div class="header-title">Tolehouse KJ</div>
+      <div class="header-sub">Queue Manager</div>
+    </div>
+  </div>
+  <button class="refresh-btn" onclick="refreshQueue()">
+    <span class="refresh-icon" id="refresh-icon">↻</span> Refresh
+  </button>
+</header>
+
+<div class="stats-bar" id="stats-bar">
+  <div class="stat"><span class="stat-num" id="stat-pending">—</span><span class="stat-label">Pending</span></div>
+  <div class="stat"><span class="stat-num" id="stat-done">—</span><span class="stat-label">Done</span></div>
+  <div class="stat"><span class="stat-num" id="stat-skipped">—</span><span class="stat-label">Skipped</span></div>
+  <div class="stat"><span class="stat-num" id="stat-total">—</span><span class="stat-label">Total</span></div>
+</div>
+
+<div class="filter-tabs">
+  <button class="tab active" data-filter="all" onclick="setFilter('all', this)">All</button>
+  <button class="tab" data-filter="Pending" onclick="setFilter('Pending', this)">Pending</button>
+  <button class="tab" data-filter="Done" onclick="setFilter('Done', this)">Done</button>
+  <button class="tab" data-filter="Skipped" onclick="setFilter('Skipped', this)">Skipped</button>
+</div>
+
+<div class="queue-wrap" id="queue-wrap">
+  <div class="queue-empty"><div class="big">⏳</div><p>Loading queue…</p></div>
+</div>
+
+<div class="last-updated" id="last-updated"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-8CuCGNu9HdJT6lscrarA0VbPUBggdW_ep0NynnYUPKB6UWYe1nOy5LvK2282hVdxIQ/exec';
+  const AUTO_REFRESH_MS = 15000; // auto-refresh every 15s
+  // ============================================================
+
+  let queue = [];
+  let currentFilter = 'all';
+  let refreshTimer = null;
+
+  async function loadQueue() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=queue`);
+      const data = await res.json();
+      queue = data.queue || [];
+      renderQueue();
+      updateStats();
+      document.getElementById('last-updated').textContent =
+        'Last updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    } catch (e) {
+      document.getElementById('queue-wrap').innerHTML =
+        `<div class="queue-empty"><div class="big">⚠️</div><p>Could not load queue. Check connection.</p></div>`;
+    }
+  }
+
+  function updateStats() {
+    const pending = queue.filter(r => r.status === 'Pending').length;
+    const done = queue.filter(r => r.status === 'Done').length;
+    const skipped = queue.filter(r => r.status === 'Skipped').length;
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-skipped').textContent = skipped;
+    document.getElementById('stat-total').textContent = queue.length;
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderQueue();
+  }
+
+  function renderQueue() {
+    const wrap = document.getElementById('queue-wrap');
+    let items = currentFilter === 'all' ? queue : queue.filter(r => r.status === currentFilter);
+
+    if (!items.length) {
+      wrap.innerHTML = `<div class="queue-empty"><div class="big">🎵</div><p>${
+        currentFilter === 'all' ? 'No requests yet tonight.' : `No ${currentFilter.toLowerCase()} songs.`
+      }</p></div>`;
+      return;
+    }
+
+    let pendingPos = 0;
+    wrap.innerHTML = items.map((r, i) => {
+      const isPending = r.status === 'Pending';
+      if (isPending) pendingPos++;
+      const posLabel = isPending ? pendingPos : '—';
+      const statusClass = r.status.toLowerCase();
+      const time = r.timestamp ? formatTime(r.timestamp) : '';
+
+      const actionBtns = r.status === 'Pending'
+        ? `<div class="actions">
+            <button class="action-btn done-btn" onclick="updateStatus(${r.rowIndex}, 'Done')">✓ Done</button>
+            <button class="action-btn skip-btn" onclick="updateStatus(${r.rowIndex}, 'Skipped')">Skip</button>
+           </div>`
+        : `<button class="action-btn undo-btn" onclick="updateStatus(${r.rowIndex}, 'Pending')">↩ Undo</button>`;
+
+      return `<div class="queue-item ${statusClass}" id="row-${r.rowIndex}">
+        <div class="queue-position">${posLabel}</div>
+        <div class="queue-info">
+          <div class="queue-song">${escHtml(r.artist)} — ${escHtml(r.title)}</div>
+          <div class="queue-meta">
+            <span class="queue-name">${escHtml(r.name)}</span>
+            ${time ? `<span class="queue-dot">·</span><span class="time-label">${time}</span>` : ''}
+          </div>
+        </div>
+        <span class="status-badge ${statusClass}">${r.status}</span>
+        ${actionBtns}
+      </div>`;
+    }).join('');
+  }
+
+  async function updateStatus(rowIndex, newStatus) {
+    const item = document.getElementById(`row-${rowIndex}`);
+    if (item) item.style.opacity = '0.4';
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'updateStatus', rowIndex, status: newStatus })
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Update local queue state
+        const entry = queue.find(r => r.rowIndex === rowIndex);
+        if (entry) entry.status = newStatus;
+        renderQueue();
+        updateStats();
+        showToast(`Marked as ${newStatus}`, 'success');
+      } else {
+        if (item) item.style.opacity = '';
+        showToast('Update failed. Try again.', 'error');
+      }
+    } catch (e) {
+      if (item) item.style.opacity = '';
+      showToast('Connection error.', 'error');
+    }
+  }
+
+  async function refreshQueue() {
+    const icon = document.getElementById('refresh-icon');
+    icon.classList.add('spinning');
+    await loadQueue();
+    setTimeout(() => icon.classList.remove('spinning'), 600);
+  }
+
+  function formatTime(ts) {
+    try {
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch { return ''; }
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Auto-refresh
+  function startAutoRefresh() {
+    refreshTimer = setInterval(loadQueue, AUTO_REFRESH_MS);
+  }
+
+  loadQueue();
+  startAutoRefresh();
+
+  // Refresh when tab becomes visible again
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) loadQueue();
+  });
+</script>
+</body>
+</html>
