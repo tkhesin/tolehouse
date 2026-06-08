@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tolehouse Karaoke Live Band</title>
+<title>Tolehouse Karaoke Band</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -88,8 +88,8 @@
   }
 
   .section-label {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    font-size: 15px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--gold);
     margin-bottom: 10px;
@@ -321,17 +321,17 @@
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(80px);
-    padding: 14px 22px;
+    padding: 18px 26px;
     border-radius: var(--radius);
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 400;
-    max-width: 340px;
+    max-width: 400px;
     width: calc(100% - 32px);
     text-align: center;
     transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
     opacity: 0;
     z-index: 999;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -367,7 +367,7 @@
 
 <header>
   <span class="mic-icon">🎤</span>
-  <h1>Tolehouse Karaoke<br>Live Band</h1>
+  <h1>Tolehouse Karaoke<br>Band</h1>
   <p class="subtitle">Request a Song</p>
   <div class="divider"></div>
 </header>
@@ -442,7 +442,7 @@
   // ============================================================
   // CONFIGURATION — replace with your deployed Apps Script URL
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVaTtDF4oRAJUQmKJs1mF4zIsctyVdqyzhy_aZwh9rKYctrqHbdflPou79dE_SCVM8Zw/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwx09l1x3V8PLP_NmaVnDBpgDPi9RTPHzYMfC0wAGNG8q2op0bxlIn4qH7ixRB4yWrxXQ/exec';
   // ============================================================
 
   let allSongs = [];       // { song, genres[] }
@@ -567,7 +567,11 @@
       const data = await res.json();
 
       if (data.success) {
-        showToast(`You're in the queue! "${selectedSong.song}" has been added.`, 'success');
+        const waitMin = (data.songsAhead || 0) * 5;
+        const waitMsg = waitMin > 0
+          ? ` You're up in about ${waitMin} minutes!`
+          : ` You're up next!`;
+        showToast(`You're in the queue!${waitMsg}`, 'success', 6000);
         clearSelection();
         document.getElementById('search-input').value = '';
         applyFilters();
