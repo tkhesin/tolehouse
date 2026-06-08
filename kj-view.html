@@ -165,14 +165,27 @@
 
   .queue-item {
     display: flex;
-    align-items: center;
-    gap: 14px;
+    flex-direction: column;
+    gap: 10px;
     padding: 16px;
-    min-height: 64px;
     border-radius: var(--radius);
     border: 1px solid transparent;
     margin-bottom: 8px;
     transition: all 0.2s;
+  }
+
+  .queue-row-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .queue-row-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-left: 44px;
   }
 
   .queue-item.pending {
@@ -198,6 +211,8 @@
     color: var(--text-dim);
     min-width: 32px;
     text-align: center;
+    flex-shrink: 0;
+    line-height: 1.3;
   }
 
   .queue-item.pending .queue-position { color: var(--gold); }
@@ -205,20 +220,21 @@
   .queue-info { flex: 1; min-width: 0; }
 
   .queue-song {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text);
-    overflow-wrap: anywhere;
     line-height: 1.3;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   .queue-meta {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 3px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-dim);
+    margin-right: auto;
   }
 
   .queue-name { color: var(--text-mid); font-weight: 500; }
@@ -410,16 +426,18 @@
         : `<button class="action-btn undo-btn" onclick="updateStatus(${r.rowIndex}, 'Pending')">↩ Undo</button>`;
 
       return `<div class="queue-item ${statusClass}" id="row-${r.rowIndex}">
-        <div class="queue-position">${posLabel}</div>
-        <div class="queue-info">
+        <div class="queue-row-top">
+          <div class="queue-position">${posLabel}</div>
           <div class="queue-song">${escHtml(r.song)}</div>
+        </div>
+        <div class="queue-row-bottom">
           <div class="queue-meta">
             <span class="queue-name">${escHtml(r.name)}</span>
             ${time ? `<span class="queue-dot">·</span><span class="time-label">${time}</span>` : ''}
           </div>
+          <span class="status-badge ${statusClass}">${r.status}</span>
+          ${actionBtns}
         </div>
-        <span class="status-badge ${statusClass}">${r.status}</span>
-        ${actionBtns}
       </div>`;
     }).join('');
   }
