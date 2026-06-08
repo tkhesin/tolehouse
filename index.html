@@ -888,10 +888,7 @@
       <span class="hero-stat-num">Zero</span>
       <span class="hero-stat-label">Venue AV needed</span>
     </div>
-    <div class="hero-stat">
-      <span class="hero-stat-num">One</span>
-      <span class="hero-stat-label">Call to book</span>
-    </div>
+
   </div>
 </section>
 
@@ -923,12 +920,12 @@
 <section class="why" id="why">
   <div class="container">
     <span class="section-label">The Business Case</span>
-    <h2 class="section-heading">Why Venue Owners <span>Keep Rebooking Us</span></h2>
+    <h2 class="section-heading">Why <span>Book Live Band Karaoke?</span></h2>
     <div class="why-grid">
       <div class="why-left">
         <p>Standard karaoke with a backing track is everywhere. Live band karaoke is an event. Guests don't just show up — they bring friends, they linger, they celebrate.</p>
         <p>The energy of a real band behind every singer changes the entire room dynamic. It's participatory entertainment at its best: even guests who never touch the mic are entertained watching their friends perform.</p>
-        <p>We handle all the setup, sound, and performance management. Your staff stays focused on the bar. Our dedicated KJ runs the queue so the night flows without any venue coordination overhead.</p>
+        <p>We handle all the setup, sound, and performance management. Your staff stays focused on the bar. Guests manage their own song queue via QR code from their phones — no venue coordination overhead.</p>
       </div>
       <div class="why-right">
         <div class="why-card">
@@ -983,9 +980,9 @@
         <p>On-stage screens mean every singer can perform confidently. Lower barrier = more people willing to get up = longer stays, more drinks.</p>
       </div>
       <div class="logistics-card">
-        <div class="logistics-icon">🎤</div>
-        <h3>Experienced KJ</h3>
-        <p>Our KJ manages the queue, keeps the energy up between songs, and runs the whole show — so your staff doesn't have to manage anything.</p>
+        <div class="logistics-icon">📋</div>
+        <h3>QR Table Cards</h3>
+        <p>We provide printed QR code sheets for every table. Guests scan, browse the catalog, and add themselves to the queue — no app download, no sign-up, no friction.</p>
       </div>
     </div>
   </div>
@@ -1047,37 +1044,9 @@
     <span class="section-label">Guest Experience</span>
     <h2 class="section-heading">QR <span>Song Requests</span></h2>
     <div class="divider"></div>
-    <div class="qr-layout">
-      <div class="qr-box-wrap">
-        <div class="qr-card">
-          <div class="qr-box">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <rect x="5" y="5" width="35" height="35" fill="none" stroke="#0D0D0D" stroke-width="4"/>
-              <rect x="12" y="12" width="21" height="21" fill="#0D0D0D"/>
-              <rect x="60" y="5" width="35" height="35" fill="none" stroke="#0D0D0D" stroke-width="4"/>
-              <rect x="67" y="12" width="21" height="21" fill="#0D0D0D"/>
-              <rect x="5" y="60" width="35" height="35" fill="none" stroke="#0D0D0D" stroke-width="4"/>
-              <rect x="12" y="67" width="21" height="21" fill="#0D0D0D"/>
-              <rect x="60" y="60" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="72" y="60" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="84" y="60" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="60" y="72" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="84" y="72" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="60" y="84" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="72" y="84" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="48" y="5" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="48" y="17" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="48" y="29" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="5" y="48" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="17" y="48" width="8" height="8" fill="#0D0D0D"/>
-              <rect x="29" y="48" width="8" height="8" fill="#0D0D0D"/>
-            </svg>
-          </div>
-          <p class="qr-caption">Guests scan at the table — no app download, no sign-up required</p>
-        </div>
-      </div>
+    <div class="qr-layout" style="grid-template-columns: 1fr;">
       <div class="qr-features">
-        <p style="color: var(--mid); margin-bottom: 1.5rem; font-size: 1.05rem;">Our QR-based request system keeps the night running smoothly — and keeps guests glued to their seats while they wait for their turn.</p>
+        <p style="color: var(--mid); margin-bottom: 1.5rem; font-size: 1.05rem;">Our QR-based request system keeps the night running smoothly — and keeps guests glued to their seats while they wait for their turn. Guests scan at the table — no app download, no sign-up required.</p>
         <div class="qr-feature">
           <div class="qr-feature-icon">📱</div>
           <div>
@@ -1096,7 +1065,7 @@
           <div class="qr-feature-icon">🎛️</div>
           <div>
             <h4>KJ-Managed Dashboard</h4>
-            <p>Our KJ has a real-time queue view to manage song order, pacing, and flow — keeping energy high all night without any effort from your staff.</p>
+            <p>Our band has a real-time queue view to manage song order, pacing, and flow — keeping energy high all night without any effort from your staff.</p>
           </div>
         </div>
         <div class="qr-feature">
@@ -1247,14 +1216,37 @@
     <li><a href="#requests">Guest Experience</a></li>
     <li><a href="#contact">Book Us</a></li>
   </ul>
-  <p class="footer-copy">&copy; 2025 Tolehouse Karaoke Band. All rights reserved.</p>
+  <p class="footer-copy">&copy; 2026 Tolehouse Karaoke Band. All rights reserved.</p>
 </footer>
 
 <script>
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
-  document.getElementById('contactForm').style.display = 'none';
-  document.getElementById('formSuccess').style.display = 'block';
+  const form = document.getElementById('contactForm');
+  const btn = form.querySelector('.form-submit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('https://formspree.io/f/meewgnzn', {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      form.style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+    } else {
+      btn.textContent = 'Send Inquiry';
+      btn.disabled = false;
+      alert('Something went wrong. Please try again or email us directly.');
+    }
+  } catch (err) {
+    btn.textContent = 'Send Inquiry';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again or email us directly.');
+  }
 }
 
 function loadVideo() {
