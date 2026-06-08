@@ -571,7 +571,7 @@
         const waitMsg = waitMin > 0
           ? ` You're up in about ${waitMin} minutes!`
           : ` You're up next!`;
-        showToast(`You're in the queue!${waitMsg}`, 'success', 6000);
+        showToast(`You're in the queue!${waitMsg}`, 'success', 8000);
         clearSelection();
         document.getElementById('search-input').value = '';
         applyFilters();
@@ -580,7 +580,7 @@
         const upMsg = ahead > 0
           ? `your next song is up in about ${ahead * 5} minutes`
           : `you're up next`;
-        showToast(`You already have ${data.pendingCount} songs pending — ${upMsg}. You can request again once one of your songs is sung!`, 'warning', 7000);
+        showToast(`You already have ${data.pendingCount} songs pending — ${upMsg}. You can request again once one of your songs is sung!`, 'warning', 9000);
       } else {
         showToast(data.message || 'Something went wrong. Please try again.', 'error');
       }
