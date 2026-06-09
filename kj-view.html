@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KJ View — Tolehouse Karaoke</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #C9A84C;
-    --gold-light: #E8C96A;
-    --deep: #0D0D0D;
-    --surface: #161616;
-    --surface2: #1E1E1E;
-    --surface3: #272727;
-    --text: #F0EAD6;
-    --text-dim: #8A8070;
-    --text-mid: #B8A98A;
-    --pending-bg: rgba(201,168,76,0.07);
-    --pending-border: rgba(201,168,76,0.3);
-    --done-bg: rgba(30,30,30,0.5);
+    --gold: #FF6B4A;
+    --gold-light: #FF8C6E;
+    --deep: #0B2828;
+    --surface: #0F3232;
+    --surface2: #143C3C;
+    --surface3: #1B4A4A;
+    --text: #F2EDE4;
+    --text-dim: #5E8B85;
+    --text-mid: #8ABDB5;
+    --pending-bg: rgba(255,107,74,0.08);
+    --pending-border: rgba(255,107,74,0.35);
+    --done-bg: rgba(15,50,50,0.5);
     --done-border: rgba(255,255,255,0.06);
-    --skipped-bg: rgba(30,30,30,0.3);
+    --skipped-bg: rgba(15,50,50,0.3);
     --radius: 10px;
   }
 
@@ -32,7 +32,7 @@
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
     min-height: 100vh;
-    background-image: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    background-image: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(255,107,74,0.08) 0%, transparent 70%);
   }
 
   header {
@@ -43,7 +43,7 @@
     border-bottom: 1px solid rgba(255,255,255,0.06);
     position: sticky;
     top: 0;
-    background: rgba(13,13,13,0.95);
+    background: rgba(11,40,40,0.95);
     backdrop-filter: blur(10px);
     z-index: 10;
   }
@@ -53,7 +53,7 @@
   .header-icon { font-size: 22px; }
 
   .header-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Barlow Condensed', sans-serif;
     font-size: 18px;
     background: linear-gradient(135deg, var(--gold-light), var(--gold));
     -webkit-background-clip: text;
@@ -110,7 +110,7 @@
   .stat:last-child { border-right: none; }
 
   .stat-num {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Barlow Condensed', sans-serif;
     font-size: 24px;
     color: var(--gold-light);
     display: block;
@@ -149,7 +149,7 @@
   }
 
   .tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-  .tab.active { background: var(--surface2); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
+  .tab.active { background: var(--surface2); border-color: rgba(255,107,74,0.4); color: var(--gold-light); }
 
   /* Queue list */
   .queue-wrap { padding: 0 24px 80px; }
@@ -206,7 +206,7 @@
   }
 
   .queue-position {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Barlow Condensed', sans-serif;
     font-size: 22px;
     color: var(--text-dim);
     min-width: 32px;
@@ -250,8 +250,8 @@
     flex-shrink: 0;
   }
 
-  .status-badge.pending { background: rgba(201,168,76,0.15); color: var(--gold-light); }
-  .status-badge.done { background: rgba(58,138,92,0.15); color: #7DD4A8; }
+  .status-badge.pending { background: rgba(255,107,74,0.18); color: var(--gold-light); }
+  .status-badge.done { background: rgba(79,178,134,0.18); color: #8FE3BE; }
   .status-badge.skipped { background: rgba(255,255,255,0.06); color: var(--text-dim); }
 
   /* Action buttons */
@@ -271,10 +271,10 @@
   }
 
   .action-btn.done-btn {
-    color: #7DD4A8;
-    border-color: rgba(58,138,92,0.3);
+    color: #8FE3BE;
+    border-color: rgba(79,178,134,0.35);
   }
-  .action-btn.done-btn:hover { background: rgba(58,138,92,0.15); }
+  .action-btn.done-btn:hover { background: rgba(79,178,134,0.18); }
 
   .action-btn.skip-btn {
     color: var(--text-dim);
@@ -284,9 +284,9 @@
 
   .action-btn.undo-btn {
     color: var(--gold);
-    border-color: rgba(201,168,76,0.2);
+    border-color: rgba(255,107,74,0.25);
   }
-  .action-btn.undo-btn:hover { background: rgba(201,168,76,0.08); }
+  .action-btn.undo-btn:hover { background: rgba(255,107,74,0.08); }
 
   .time-label {
     font-size: 11px;
@@ -310,8 +310,8 @@
     z-index: 999;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.success { background: #1A3328; border: 1px solid #3A8A5C; color: #7DD4A8; }
-  .toast.error { background: #2E1A18; border: 1px solid #C44B3A; color: #F08070; }
+  .toast.success { background: #1A3328; border: 1px solid #3A8A5C; color: #8FE3BE; }
+  .toast.error { background: #3A1B16; border: 1px solid #E0573E; color: #FF9C82; }
 
   .last-updated {
     font-size: 11px;
@@ -359,7 +359,7 @@
 
 <script>
   // ============================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyV0bWYvdb9JEdGIt8zFUf9T5IYU4RFo7h6P_6zRR4rnKsfeK87zX6OQaaTflcWMsG6Yw/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyANqOFDB8J3XWlUzmZON0VdW-DLwNIStH19GoF9Y6xCydSTTF5UTisoEGHuN6iWPdebw/exec';
   const AUTO_REFRESH_MS = 15000; // auto-refresh every 15s
   // ============================================================
 
