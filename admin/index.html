@@ -358,11 +358,11 @@
 <div class="last-updated" id="last-updated"></div>
 <div class="toast" id="toast"></div>
 
+<script src="/tolehouse/config.js"></script>
 <script>
-  // ============================================================
-  const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+  // URL comes from config.js (loaded above) so page updates never overwrite it.
+  const SCRIPT_URL = (window.TOLEHOUSE_CONFIG && window.TOLEHOUSE_CONFIG.SCRIPT_URL) || '';
   const AUTO_REFRESH_MS = 15000; // auto-refresh every 15s
-  // ============================================================
 
   let queue = [];
   let currentFilter = 'all';
