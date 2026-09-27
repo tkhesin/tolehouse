@@ -474,11 +474,26 @@
       const res = await fetch(`${SCRIPT_URL}?action=songs`);
       const data = await res.json();
       const raw = Array.isArray(data.songs) ? data.songs : [];
-      // Normalize so a stray non-string song or missing genres can't break rendering.
-      allSongs = raw.map(s => ({
-        song: (s && s.song != null) ? String(s.song) : '',
-        genres: (s && Array.isArray(s.genres)) ? s.genres : []
-      })).filter(s => s.song.trim() !== '');
+      // Accept either {song} (new) or {artist,title} (old) backend shapes,
+      // and guarantee every value is a safe string so nothing can crash rendering.
+      allSongs = raw.map(s => {
+        s = s || {};
+        let songStr = '';
+        if (s.song != null && String(s.song).trim() !== '') {
+          songStr = String(s.song);
+        } else if (s.artist != null || s.title != null) {
+          const a = s.artist != null ? String(s.artist) : '';
+          const t = s.title  != null ? String(s.title)  : '';
+          songStr = (a && t) ? (a + ' - ' + t) : (a || t);
+        }
+        let genres = [];
+        if (Array.isArray(s.genres)) {
+          genres = s.genres.map(g => String(g));
+        } else if (s.genres != null && String(s.genres).trim() !== '') {
+          genres = String(s.genres).split(',').map(g => g.trim()).filter(Boolean);
+        }
+        return { song: songStr, genres: genres };
+      }).filter(s => s.song.trim() !== '');
       applyFilters();
     } catch (e) {
       console.error('loadSongs failed:', e);
@@ -491,9 +506,10 @@
   function applyFilters() {
     const query = document.getElementById('search-input').value.toLowerCase().trim();
     filtered = allSongs.filter(s => {
-      const matchGenre = activeGenre === 'all' || s.genres.includes(activeGenre);
-      const matchSearch = !query ||
-        s.song.toLowerCase().includes(query);
+      if (!s || typeof s.song !== 'string') return false;
+      const genres = Array.isArray(s.genres) ? s.genres : [];
+      const matchGenre = activeGenre === 'all' || genres.includes(activeGenre);
+      const matchSearch = !query || s.song.toLowerCase().includes(query);
       return matchGenre && matchSearch;
     });
     renderSongs();
