@@ -473,9 +473,15 @@
     try {
       const res = await fetch(`${SCRIPT_URL}?action=songs`);
       const data = await res.json();
-      allSongs = data.songs || [];
+      const raw = Array.isArray(data.songs) ? data.songs : [];
+      // Normalize so a stray non-string song or missing genres can't break rendering.
+      allSongs = raw.map(s => ({
+        song: (s && s.song != null) ? String(s.song) : '',
+        genres: (s && Array.isArray(s.genres)) ? s.genres : []
+      })).filter(s => s.song.trim() !== '');
       applyFilters();
     } catch (e) {
+      console.error('loadSongs failed:', e);
       document.getElementById('song-list').innerHTML = `
         <div class="empty-state"><div class="big">⚠️</div><p>Could not load songs. Please refresh.</p></div>`;
     }
@@ -503,23 +509,27 @@
       return;
     }
 
-    count.textContent = `${filtered.length} song${filtered.length !== 1 ? 's' : ''}`;
-
     if (!filtered.length) {
+      count.textContent = '0 songs';
       list.innerHTML = `<div class="no-results">No songs match your search</div>`;
       return;
     }
 
-    list.innerHTML = filtered.map((s, i) => {
-      const key = s.song;
-      const isSel = selectedSong && selectedSong.key === key;
-      return `<div class="song-item${isSel ? ' selected' : ''}" onclick="selectSong(${i})" data-key="${key}">
-        <div class="song-info">
-          <div class="song-title">${escHtml(s.song)}</div>
-        </div>
-        <div class="song-check"></div>
-      </div>`;
-    }).join('');
+    try {
+      list.innerHTML = filtered.map((s, i) => {
+        const isSel = selectedSong && selectedSong.key === s.song;
+        return `<div class="song-item${isSel ? ' selected' : ''}" onclick="selectSong(${i})" data-key="${escHtml(s.song)}">
+          <div class="song-info">
+            <div class="song-title">${escHtml(s.song)}</div>
+          </div>
+          <div class="song-check"></div>
+        </div>`;
+      }).join('');
+      count.textContent = `${filtered.length} song${filtered.length !== 1 ? 's' : ''}`;
+    } catch (e) {
+      console.error('renderSongs failed:', e);
+      list.innerHTML = `<div class="no-results">Something went wrong displaying songs. Please refresh.</div>`;
+    }
   }
 
   function selectSong(filteredIdx) {
@@ -619,7 +629,8 @@
   }
 
   function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   // ---- Init ----
