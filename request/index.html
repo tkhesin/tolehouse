@@ -97,6 +97,13 @@
     display: block;
   }
 
+  .required-mark {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-mid);
+    font-weight: 400;
+  }
+
   input[type="text"] {
     width: 100%;
     background: var(--surface2);
@@ -394,7 +401,7 @@
 
   <!-- Name -->
   <div class="section">
-    <span class="section-label">Your Name</span>
+    <span class="section-label">Your Name <span class="required-mark">*required</span></span>
     <input type="text" id="name-input" placeholder="Enter your name" autocomplete="off" autocorrect="off">
   </div>
 
@@ -451,7 +458,7 @@
       <button onclick="clearSelection()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:0;" aria-label="Clear selection">✕</button>
     </div>
     <button class="submit-btn" id="submit-btn" onclick="submitRequest()" disabled>
-      Submit Request
+      Enter your name to start
     </button>
   </div>
 </div>
@@ -576,7 +583,20 @@
 
   function updateSubmitState() {
     const name = document.getElementById('name-input').value.trim();
-    document.getElementById('submit-btn').disabled = !name || !selectedSong;
+    const btn = document.getElementById('submit-btn');
+    const ready = !!name && !!selectedSong;
+    btn.disabled = !ready;
+    // Don't overwrite the label while a submission is in progress.
+    if (btn.dataset.submitting === '1') return;
+    if (!name && !selectedSong) {
+      btn.textContent = 'Enter your name to start';
+    } else if (!name) {
+      btn.textContent = 'Enter your name';
+    } else if (!selectedSong) {
+      btn.textContent = 'Pick a song';
+    } else {
+      btn.textContent = 'Submit Request';
+    }
   }
 
   // ---- Genre pills ----
@@ -598,6 +618,7 @@
     if (!name || !selectedSong) return;
 
     const btn = document.getElementById('submit-btn');
+    btn.dataset.submitting = '1';
     btn.disabled = true;
     btn.innerHTML = '<span class="loading-spinner"></span>Adding to queue…';
 
@@ -632,7 +653,7 @@
       showToast('Connection error. Please try again.', 'error');
     }
 
-    btn.innerHTML = 'Submit Request';
+    btn.dataset.submitting = '';
     updateSubmitState();
   }
 
@@ -650,6 +671,7 @@
   }
 
   // ---- Init ----
+  updateSubmitState();
   loadSongs();
 </script>
 </body>
