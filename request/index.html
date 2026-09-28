@@ -97,12 +97,6 @@
     display: block;
   }
 
-  .required-mark {
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--text-mid);
-    font-weight: 400;
-  }
 
   input[type="text"] {
     width: 100%;
@@ -392,7 +386,7 @@
 
 <header>
   <span class="mic-icon">🎤</span>
-  <h1>Tolehouse Karaoke<br>Band</h1>
+  <h1>Tolehouse Karaoke</h1>
   <p class="subtitle">Request a Song</p>
   <div class="divider"></div>
 </header>
@@ -401,13 +395,13 @@
 
   <!-- Name -->
   <div class="section">
-    <span class="section-label">Your Name <span class="required-mark">*required</span></span>
+    <span class="section-label">Step 1: Enter Your Name</span>
     <input type="text" id="name-input" placeholder="Enter your name" autocomplete="off" autocorrect="off">
   </div>
 
   <!-- Genre Filter -->
   <div class="section">
-    <span class="section-label">Filter by Genre</span>
+    <span class="section-label">Step 2: Select a Song</span>
     <div class="genre-scroll" id="genre-filters">
       <button class="genre-pill active" data-genre="all">All</button>
       <button class="genre-pill" data-genre="Classic Rock">Classic Rock</button>
