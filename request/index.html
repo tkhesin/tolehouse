@@ -126,11 +126,9 @@
   /* Genre filters */
   .genre-scroll {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    overflow-x: auto;
     padding-bottom: 6px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   .genre-scroll::-webkit-scrollbar { display: none; }
@@ -405,16 +403,6 @@
     <span class="section-label"><strong>Step 2:</strong> Select a Song</span>
     <div class="genre-scroll" id="genre-filters">
       <button class="genre-pill active" data-genre="all">All</button>
-      <button class="genre-pill" data-genre="Classic Rock">Classic Rock</button>
-      <button class="genre-pill" data-genre="Rock">Rock</button>
-      <button class="genre-pill" data-genre="80s">80s</button>
-      <button class="genre-pill" data-genre="Folk">Folk</button>
-      <button class="genre-pill" data-genre="Country">Country</button>
-      <button class="genre-pill" data-genre="Contemporary">Contemporary</button>
-      <button class="genre-pill" data-genre="Soul / R&B">Soul / R&B</button>
-      <button class="genre-pill" data-genre="Latin">Latin</button>
-      <button class="genre-pill" data-genre="Oldies">Oldies</button>
-      <button class="genre-pill" data-genre="Duet">Duet</button>
     </div>
   </div>
 
@@ -468,6 +456,33 @@
   let filtered = [];
   let selectedSong = null;
   let activeGenre = 'all';
+
+  // ---- Genre filter buttons (built from the Tags tab, with a fallback) ----
+  const FALLBACK_GENRES = ['Classic Rock','Pop/Rock','80s','Folk','Country','Current Hits','Soul/R&B','Latin','Oldies','Duet','Top Karaoke'];
+
+  function renderGenreButtons(genres) {
+    const container = document.getElementById('genre-filters');
+    // Always start with the All button, then add each genre.
+    let html = '<button class="genre-pill active" data-genre="all">All</button>';
+    genres.forEach(g => {
+      const safe = escHtml(g);
+      html += `<button class="genre-pill" data-genre="${safe}">${safe}</button>`;
+    });
+    container.innerHTML = html;
+    activeGenre = 'all';
+  }
+
+  async function loadTags() {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=tags`);
+      const data = await res.json();
+      const tags = Array.isArray(data.tags) ? data.tags.map(t => String(t).trim()).filter(Boolean) : [];
+      renderGenreButtons(tags.length ? tags : FALLBACK_GENRES);
+    } catch (e) {
+      console.error('loadTags failed, using fallback:', e);
+      renderGenreButtons(FALLBACK_GENRES);
+    }
+  }
 
   // ---- Load songs ----
   async function loadSongs() {
@@ -666,6 +681,7 @@
 
   // ---- Init ----
   updateSubmitState();
+  loadTags();
   loadSongs();
 </script>
 </body>
