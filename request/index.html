@@ -702,6 +702,7 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="loading-spinner"></span>Adding to queue…';
 
+    let data = null;
     try {
       const params = new URLSearchParams({
         action: 'submit',
@@ -709,27 +710,32 @@
         song: selectedSong.song
       });
       const res = await fetch(SCRIPT_URL + '?' + params.toString());
-      const data = await res.json();
-
-      if (data.success) {
-        const waitMin = (data.songsAhead || 0) * 5;
-        const detail = waitMin > 0
-          ? `Up in about ${waitMin} minutes.`
-          : `Up next!`;
-        showCard('🎉', "You're in!", detail, 'success', 8000);
-        resetForNextPerson();
-      } else if (data.limitReached) {
-        showCard('🎤', "You're maxed out", `${data.pendingCount} songs already pending — request again once one is sung.`, 'warning', 9000);
-        resetForNextPerson();   // bounce back to Screen 1
-      } else {
-        showToast(data.message || 'Something went wrong. Please try again.', 'error');
-      }
+      data = await res.json();
     } catch (e) {
-      showToast('Connection error. Please try again.', 'error');
+      data = null;   // network/parse error
     }
 
+    // Always clear the in-progress flag and restore the button FIRST, before any
+    // reset or state update, so the button can never get stuck mid-submit.
     btn.dataset.submitting = '';
+    btn.innerHTML = 'Submit Request';
     updateSubmitState();
+
+    if (data && data.success) {
+      const waitMin = (data.songsAhead || 0) * 5;
+      const detail = waitMin > 0
+        ? `Up in about ${waitMin} minutes.`
+        : `Up next!`;
+      showCard('🎉', "You're in!", detail, 'success', 8000);
+      resetForNextPerson();
+    } else if (data && data.limitReached) {
+      showCard('🎤', "You're maxed out", `${data.pendingCount} songs already pending — request again once one is sung.`, 'warning', 9000);
+      resetForNextPerson();   // bounce back to Screen 1
+    } else if (data && data.message) {
+      showToast(data.message, 'error');
+    } else {
+      showToast('Connection error. Please try again.', 'error');
+    }
   }
 
   // ---- Toast ----
