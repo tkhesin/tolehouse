@@ -532,10 +532,11 @@
     const query = document.getElementById('search-input').value.toLowerCase().trim();
     filtered = allSongs.filter(s => {
       if (!s || typeof s.song !== 'string') return false;
+      // When searching, span the WHOLE catalog (ignore the genre filter).
+      // With no query, filter by the selected genre.
+      if (query) return s.song.toLowerCase().includes(query);
       const genres = Array.isArray(s.genres) ? s.genres : [];
-      const matchGenre = activeGenre === 'all' || genres.includes(activeGenre);
-      const matchSearch = !query || s.song.toLowerCase().includes(query);
-      return matchGenre && matchSearch;
+      return activeGenre === 'all' || genres.includes(activeGenre);
     });
     renderSongs();
   }
@@ -615,8 +616,32 @@
   }
 
   // ---- Screen navigation ----
-  function goToSongScreen() {
-    if (!document.getElementById('name-input').value.trim()) return;
+  async function goToSongScreen() {
+    const name = document.getElementById('name-input').value.trim();
+    if (!name) return;
+
+    // Pre-check the pending-song limit before letting them browse.
+    // Fail-open: if the check can't reach the backend, let them through
+    // (the submit-time check still enforces the limit).
+    const btn = document.getElementById('to-song-btn');
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.innerHTML = '<span class="loading-spinner"></span>Checking…';
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=checkLimit&name=${encodeURIComponent(name)}`);
+      const data = await res.json();
+      if (data && data.atLimit) {
+        showToast(`You already have ${data.pendingCount} songs pending. You can request again once one of your songs is sung!`, 'warning', 9000);
+        btn.innerHTML = original;
+        btn.disabled = false;
+        return;   // stay on Screen 1
+      }
+    } catch (e) {
+      console.error('checkLimit failed, allowing through:', e);
+    }
+
+    btn.innerHTML = original;
+    btn.disabled = false;
     document.getElementById('screen-name').style.display = 'none';
     document.getElementById('screen-song').style.display = 'block';
   }
@@ -652,7 +677,16 @@
     applyFilters();
   });
 
-  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('search-input').addEventListener('input', () => {
+    // Typing in search spans the whole catalog, so reset the genre pill to "All".
+    if (document.getElementById('search-input').value.trim() && activeGenre !== 'all') {
+      document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+      const allPill = document.querySelector('.genre-pill[data-genre="all"]');
+      if (allPill) allPill.classList.add('active');
+      activeGenre = 'all';
+    }
+    applyFilters();
+  });
   document.getElementById('name-input').addEventListener('input', updateNameState);
 
   // ---- Submit ----
@@ -682,11 +716,8 @@
         showToast(`You're in the queue!${waitMsg}`, 'success', 8000);
         resetForNextPerson();
       } else if (data.limitReached) {
-        const ahead = data.songsAhead || 0;
-        const upMsg = ahead > 0
-          ? `your next song is up in about ${ahead * 5} minutes`
-          : `you're up next`;
-        showToast(`You already have ${data.pendingCount} songs pending — ${upMsg}. You can request again once one of your songs is sung!`, 'warning', 9000);
+        showToast(`You already have ${data.pendingCount} songs pending. You can request again once one of your songs is sung!`, 'warning', 9000);
+        resetForNextPerson();   // bounce back to Screen 1
       } else {
         showToast(data.message || 'Something went wrong. Please try again.', 'error');
       }
