@@ -351,6 +351,7 @@
     opacity: 0;
     z-index: 999;
     line-height: 1.55;
+    pointer-events: none;
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -698,6 +699,7 @@
     if (!name || !selectedSong) return;   // name is captured on screen 1; guard kept as a safety net
 
     const btn = document.getElementById('submit-btn');
+    hideToast();   // clear any lingering card so it can't cover the button
     btn.dataset.submitting = '1';
     btn.disabled = true;
     btn.innerHTML = '<span class="loading-spinner"></span>Adding to queue…';
@@ -739,6 +741,12 @@
   }
 
   // ---- Toast ----
+  function hideToast() {
+    const t = document.getElementById('toast');
+    clearTimeout(t._timer);
+    t.classList.remove('show');
+  }
+
   function showToast(msg, type = 'success', duration = 4000) {
     const t = document.getElementById('toast');
     t.textContent = msg;                 // plain text (errors, etc.)
