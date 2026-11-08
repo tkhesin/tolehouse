@@ -392,39 +392,48 @@
 
 <main>
 
-  <!-- Name -->
-  <div class="section">
-    <span class="section-label"><strong>Step 1:</strong> Enter Your Name</span>
-    <input type="text" id="name-input" placeholder="Enter your name" autocomplete="off" autocorrect="off">
-  </div>
-
-  <!-- Genre Filter -->
-  <div class="section">
-    <span class="section-label"><strong>Step 2:</strong> Select a Song</span>
-    <div class="genre-scroll" id="genre-filters">
-      <button class="genre-pill active" data-genre="all">All</button>
+  <!-- SCREEN 1: Nickname -->
+  <div id="screen-name">
+    <div class="section">
+      <span class="section-label">What is your nickname?</span>
+      <input type="text" id="name-input" placeholder="Enter your nickname" autocomplete="off" autocorrect="off">
     </div>
+    <button class="submit-btn" id="to-song-btn" onclick="goToSongScreen()" disabled>
+      Select a Song →
+    </button>
   </div>
 
-  <!-- Search -->
-  <div class="section">
-    <div class="search-wrap">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" id="search-input" placeholder="Search by song or artist…" autocomplete="off" autocorrect="off">
-    </div>
-  </div>
+  <!-- SCREEN 2: Song selection -->
+  <div id="screen-song" style="display:none;">
 
-  <!-- Song list -->
-  <div class="section">
-    <div class="song-count" id="song-count"></div>
-    <div class="song-list" id="song-list">
-      <div class="empty-state">
-        <div class="big">🎵</div>
-        <p>Loading songs…</p>
+    <!-- Genre Filter -->
+    <div class="section">
+      <div class="genre-scroll" id="genre-filters">
+        <button class="genre-pill active" data-genre="all">All</button>
       </div>
     </div>
+
+    <!-- Search -->
+    <div class="section">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search by song or artist…" autocomplete="off" autocorrect="off">
+      </div>
+    </div>
+
+    <!-- Song list -->
+    <div class="section">
+      <div class="song-count" id="song-count"></div>
+      <div class="song-list" id="song-list">
+        <div class="empty-state">
+          <div class="big">🎵</div>
+          <p>Loading songs…</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </main>
@@ -440,7 +449,7 @@
       <button onclick="clearSelection()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:0;" aria-label="Clear selection">✕</button>
     </div>
     <button class="submit-btn" id="submit-btn" onclick="submitRequest()" disabled>
-      Enter your name to start
+      Pick a song
     </button>
   </div>
 </div>
@@ -590,22 +599,47 @@
     renderSongs();
   }
 
+  // Submit button: name is already captured on screen 1, so this only
+  // depends on whether a song is selected.
   function updateSubmitState() {
-    const name = document.getElementById('name-input').value.trim();
     const btn = document.getElementById('submit-btn');
-    const ready = !!name && !!selectedSong;
-    btn.disabled = !ready;
-    // Don't overwrite the label while a submission is in progress.
+    btn.disabled = !selectedSong;
     if (btn.dataset.submitting === '1') return;
-    if (!name && !selectedSong) {
-      btn.textContent = 'Enter your name to start';
-    } else if (!name) {
-      btn.textContent = 'Enter your name';
-    } else if (!selectedSong) {
-      btn.textContent = 'Pick a song';
-    } else {
-      btn.textContent = 'Submit Request';
-    }
+    btn.textContent = selectedSong ? 'Submit Request' : 'Pick a song';
+  }
+
+  // Screen 1 "Select a Song →" button: enabled once a nickname is typed.
+  function updateNameState() {
+    const name = document.getElementById('name-input').value.trim();
+    document.getElementById('to-song-btn').disabled = !name;
+  }
+
+  // ---- Screen navigation ----
+  function goToSongScreen() {
+    if (!document.getElementById('name-input').value.trim()) return;
+    document.getElementById('screen-name').style.display = 'none';
+    document.getElementById('screen-song').style.display = 'block';
+  }
+
+  function goToNameScreen() {
+    document.getElementById('screen-song').style.display = 'none';
+    document.getElementById('screen-name').style.display = 'block';
+  }
+
+  // After a successful submit: clear everything and return to the nickname screen,
+  // ready for the next person.
+  function resetForNextPerson() {
+    clearSelection();                                      // drops selected song, hides submit bar
+    document.getElementById('search-input').value = '';
+    document.getElementById('name-input').value = '';
+    // Reset genre filter back to "All"
+    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+    const allPill = document.querySelector('.genre-pill[data-genre="all"]');
+    if (allPill) allPill.classList.add('active');
+    activeGenre = 'all';
+    applyFilters();
+    updateNameState();                                     // disables the "Select a Song" button again
+    goToNameScreen();
   }
 
   // ---- Genre pills ----
@@ -619,12 +653,12 @@
   });
 
   document.getElementById('search-input').addEventListener('input', applyFilters);
-  document.getElementById('name-input').addEventListener('input', updateSubmitState);
+  document.getElementById('name-input').addEventListener('input', updateNameState);
 
   // ---- Submit ----
   async function submitRequest() {
     const name = document.getElementById('name-input').value.trim();
-    if (!name || !selectedSong) return;
+    if (!name || !selectedSong) return;   // name is captured on screen 1; guard kept as a safety net
 
     const btn = document.getElementById('submit-btn');
     btn.dataset.submitting = '1';
@@ -646,9 +680,7 @@
           ? ` You're up in about ${waitMin} minutes!`
           : ` You're up next!`;
         showToast(`You're in the queue!${waitMsg}`, 'success', 8000);
-        clearSelection();
-        document.getElementById('search-input').value = '';
-        applyFilters();
+        resetForNextPerson();
       } else if (data.limitReached) {
         const ahead = data.songsAhead || 0;
         const upMsg = ahead > 0
@@ -680,7 +712,8 @@
   }
 
   // ---- Init ----
-  updateSubmitState();
+  updateNameState();     // "Select a Song →" starts disabled until a nickname is typed
+  updateSubmitState();   // submit button starts disabled until a song is picked
   loadTags();
   loadSongs();
 </script>
