@@ -354,9 +354,12 @@
   }
 
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  .toast.success { background: #103A30; border: 1px solid #4FB286; color: #8FE3BE; }
+  .toast.success { background: #4FB286; border: 1px solid #4FB286; color: #04342C; }
   .toast.error { background: #3A1B16; border: 1px solid #E0573E; color: #FF9C82; }
-  .toast.warning { background: #143C3C; border: 1px solid #FF6B4A; color: #FF8C6E; }
+  .toast.warning { background: #F5B841; border: 1px solid #F5B841; color: #5A3D06; }
+  .toast .toast-icon { font-size: 30px; line-height: 1; margin-bottom: 4px; }
+  .toast .toast-title { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+  .toast .toast-detail { font-size: 15px; line-height: 1.45; }
 
   .loading-spinner {
     display: inline-block;
@@ -626,12 +629,12 @@
     const btn = document.getElementById('to-song-btn');
     btn.disabled = true;
     const original = btn.textContent;
-    btn.innerHTML = '<span class="loading-spinner"></span>Checking…';
+    btn.innerHTML = '<span class="loading-spinner"></span>One sec…';
     try {
       const res = await fetch(`${SCRIPT_URL}?action=checkLimit&name=${encodeURIComponent(name)}`);
       const data = await res.json();
       if (data && data.atLimit) {
-        showToast(`You already have ${data.pendingCount} songs pending. You can request again once one of your songs is sung!`, 'warning', 9000);
+        showCard('🎤', "You're maxed out", `${data.pendingCount} songs already pending — request again once one is sung.`, 'warning', 9000);
         btn.innerHTML = original;
         btn.disabled = false;
         return;   // stay on Screen 1
@@ -710,13 +713,13 @@
 
       if (data.success) {
         const waitMin = (data.songsAhead || 0) * 5;
-        const waitMsg = waitMin > 0
-          ? ` You're up in about ${waitMin} minutes!`
-          : ` You're up next!`;
-        showToast(`You're in the queue!${waitMsg}`, 'success', 8000);
+        const detail = waitMin > 0
+          ? `Up in about ${waitMin} minutes.`
+          : `Up next!`;
+        showCard('🎉', "You're in!", detail, 'success', 8000);
         resetForNextPerson();
       } else if (data.limitReached) {
-        showToast(`You already have ${data.pendingCount} songs pending. You can request again once one of your songs is sung!`, 'warning', 9000);
+        showCard('🎤', "You're maxed out", `${data.pendingCount} songs already pending — request again once one is sung.`, 'warning', 9000);
         resetForNextPerson();   // bounce back to Screen 1
       } else {
         showToast(data.message || 'Something went wrong. Please try again.', 'error');
@@ -732,9 +735,23 @@
   // ---- Toast ----
   function showToast(msg, type = 'success', duration = 4000) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
+    t.textContent = msg;                 // plain text (errors, etc.)
     t.className = `toast ${type} show`;
-    setTimeout(() => { t.classList.remove('show'); }, duration);
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.classList.remove('show'); }, duration);
+  }
+
+  // Rich two-line card: icon + bold title + detail line. Text is our own
+  // controlled strings (icon/title/detail are escaped for safety).
+  function showCard(icon, title, detail, type, duration) {
+    const t = document.getElementById('toast');
+    t.innerHTML =
+      `<div class="toast-icon">${escHtml(icon)}</div>` +
+      `<div class="toast-title">${escHtml(title)}</div>` +
+      `<div class="toast-detail">${escHtml(detail)}</div>`;
+    t.className = `toast ${type} show`;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.classList.remove('show'); }, duration);
   }
 
   function escHtml(s) {
