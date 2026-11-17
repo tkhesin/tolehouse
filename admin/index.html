@@ -403,6 +403,21 @@
     const wrap = document.getElementById('queue-wrap');
     let items = currentFilter === 'all' ? queue : queue.filter(r => r.status === currentFilter);
 
+    // In the "All" view, keep Pending songs at the top (in their original
+    // submission order) and sink Done/Skipped to the bottom. Stable sort
+    // preserves order within each group.
+    if (currentFilter === 'all') {
+      items = items
+        .map((r, i) => [r, i])
+        .sort((a, b) => {
+          const aPending = a[0].status === 'Pending' ? 0 : 1;
+          const bPending = b[0].status === 'Pending' ? 0 : 1;
+          if (aPending !== bPending) return aPending - bPending;
+          return a[1] - b[1];   // original order within the group
+        })
+        .map(pair => pair[0]);
+    }
+
     if (!items.length) {
       wrap.innerHTML = `<div class="queue-empty"><div class="big">🎵</div><p>${
         currentFilter === 'all' ? 'No requests yet tonight.' : `No ${currentFilter.toLowerCase()} songs.`
