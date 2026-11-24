@@ -619,6 +619,32 @@
     line-height: 1.55;
   }
 
+  /* ─── WHERE WE PLAY ─── */
+  .venue-list {
+    list-style: none;
+    margin-top: 2rem;
+    max-width: 720px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+  .venue-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .venue-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--cream, #F5E6D3); }
+  .venue-town { color: var(--mid); font-size: 0.95rem; margin-left: 0.5rem; }
+  .venue-date { color: var(--gold); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap; }
+  @media (max-width: 600px) {
+    .venue-list li { flex-direction: column; gap: 0.25rem; }
+  }
+  .venue-note { margin-top: 1.25rem; font-size: 0.9rem; color: var(--muted); }
+  .venue-note a { color: var(--gold); text-decoration: none; font-weight: 600; }
+  .venue-note a:hover { color: var(--gold-light); }
+
   /* ─── VIDEO ─── */
   .video-wrapper {
     margin-top: 2.5rem;
@@ -901,6 +927,7 @@
     <li><a href="#why">Why It Works</a></li>
     <li><a href="#catalog">Song Catalog</a></li>
     <li><a href="#logistics">What We Bring</a></li>
+    <li><a href="#shows">Venues</a></li>
     <li><a href="#how">How to Book</a></li>
     <li><a href="#contact" class="nav-cta">Get Availability</a></li>
   </ul>
@@ -1159,6 +1186,21 @@
         <p>We run the show start to finish. You manage the bar; we manage the entertainment. That's the whole deal.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- WHERE WE PLAY -->
+<section style="background: var(--surface-1); border-top: 1px solid rgba(201,168,76,0.1); padding: 6rem 2rem;" id="shows">
+  <div class="container">
+    <span class="section-label">Where We Play</span>
+    <h2 class="section-heading">Venues That <span>Book Us</span></h2>
+    <div class="divider"></div>
+    <ul class="venue-list">
+      <li><span><span class="venue-name">Maine Art Collective</span><span class="venue-town">Portland</span></span><span class="venue-date">Nov 20, 2026</span></li>
+      <li><span><span class="venue-name">The Roosevelt Room</span><span class="venue-town">Windham</span></span><span class="venue-date">Dec 11, 2026</span></li>
+      <li><span><span class="venue-name">Social Goose</span><span class="venue-town">Brunswick</span></span><span class="venue-date">Jan 30, 2027</span></li>
+    </ul>
+    <p class="venue-note">Show times and details: <a href="https://www.facebook.com/tolehouseband/events" target="_blank" rel="noopener">see our events on Facebook</a></p>
   </div>
 </section>
 
