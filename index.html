@@ -109,6 +109,9 @@
     padding: 7rem 2rem 5rem;
     position: relative;
     overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(11,40,40,0.80) 0%, rgba(11,40,40,0.86) 55%, rgba(11,40,40,0.97) 100%),
+      url('img/hero-bg.jpg') center 40% / cover no-repeat;
   }
 
   .hero::before {
@@ -125,6 +128,7 @@
     width: min(300px, 60vw);
     height: auto;
     margin-bottom: 2rem;
+    border-radius: 50%;
     filter: drop-shadow(0 0 40px rgba(201,168,76,0.25));
     animation: logoFloat 4s ease-in-out infinite;
   }
