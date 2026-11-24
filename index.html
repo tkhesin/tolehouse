@@ -632,6 +632,34 @@
     justify-content: center;
   }
 
+  .photo-strip {
+    margin-top: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+  .photo-strip img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+    border: 1px solid rgba(201,168,76,0.15);
+  }
+  .photo-strip-note {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .photo-strip-note a { color: var(--gold); text-decoration: none; font-weight: 600; }
+  .photo-strip-note a:hover { color: var(--gold-light); }
+  @media (max-width: 900px) {
+    .photo-strip { grid-template-columns: repeat(2, 1fr); }
+    .photo-strip img:first-child { grid-column: 1 / -1; aspect-ratio: 16/9; }
+  }
+
   .video-placeholder {
     display: flex;
     flex-direction: column;
@@ -924,6 +952,15 @@
         style="display:block;">
       </iframe>
     </div>
+
+    <div class="photo-strip">
+      <img src="img/gallery/band-keys-lyrics.jpg" alt="Band playing with the lyric screen in view" loading="lazy" width="600" height="450">
+      <img src="img/gallery/singer-bass-guitar.jpg" alt="Singer at the mic with the bass and guitar players" loading="lazy" width="600" height="450">
+      <img src="img/gallery/drummer-view.jpg" alt="View from behind the drum kit toward the lyric screen" loading="lazy" width="600" height="450">
+      <img src="img/gallery/wide-room.jpg" alt="Wide view of the band playing in the gallery" loading="lazy" width="600" height="450">
+      <img src="img/gallery/bassist.jpg" alt="Bass player and band mid-song" loading="lazy" width="600" height="450">
+    </div>
+    <p class="photo-strip-note">Live at Maine Art Collective, Portland · More on <a href="https://www.facebook.com/tolehouseband" target="_blank" rel="noopener">Facebook</a> &amp; <a href="https://www.instagram.com/tolehouseband/" target="_blank" rel="noopener">Instagram</a></p>
   </div>
 </section>
 
